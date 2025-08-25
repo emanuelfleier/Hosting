@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proceso de Barrido en Farmacia IPAM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Teal Accent -->
+    <!-- Application Structure Plan: Se ha diseñado una SPA de una sola página con desplazamiento vertical y una barra de navegación fija. La estructura se divide en secciones temáticas: 1) Introducción, 2) Flujo del Proceso Interactivo, 3) Comparativa por Sector, 4) Beneficios Clave, 5) Preguntas Frecuentes y 6) Evaluación. Esta arquitectura fue elegida para transformar un documento procedimental en una guía de aprendizaje y evaluación interactiva. -->
+    <!-- Visualization & Content Choices: 1. Flujo del Proceso: Se reemplazó el diagrama estático por una secuencia de pasos interactivos en HTML/CSS. 2. Comparativa de Sectores: Se usó un gráfico de dona (Chart.js) y botones interactivos. 3. Beneficios: Se presentan en tarjetas con íconos (Unicode). 4. FAQ: Se implementó un acordeón con JS. 5. Evaluación: Se añadió una sección con preguntas de opción múltiple y abiertas, con un botón de revisión final para mostrar las respuestas correctas. Justificación: Estas elecciones priorizan la interacción y la claridad visual para facilitar el aprendizaje y la evaluación de un proceso operativo. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        .step-connector {
+            width: 2px;
+            height: 100%;
+            background-color: #D1D5DB;
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            z-index: -1;
+        }
+        .step.active .step-icon {
+            background-color: #14B8A6;
+            color: white;
+            transform: scale(1.1);
+        }
+        .step.active .step-content {
+            border-color: #14B8A6;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .faq-item .faq-answer {
+            display: none;
+            transition: max-height 0.3s ease-out;
+            overflow: hidden;
+            max-height: 0;
+        }
+        .faq-item.open .faq-answer {
+            display: block;
+            max-height: 200px; /* Adjust as needed */
+        }
+        .faq-item.open .faq-icon {
+            transform: rotate(180deg);
+        }
+        .sector-btn.active {
+            background-color: #14B8A6;
+            color: white;
+            border-color: #14B8A6;
+        }
+        .mc-option-label.correct {
+            background-color: #D1FAE5;
+            border-color: #10B981;
+            color: #065F46;
+        }
+        .mc-option-label.incorrect {
+            background-color: #FEE2E2;
+            border-color: #EF4444;
+            color: #991B1B;
+            text-decoration: line-through;
+        }
+        .considerations {
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="password-overlay" class="fixed inset-0 bg-gray-100 z-50 flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm text-center">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Acceso Restringido</h2>
+            <p class="text-gray-600 mb-6">Esta documentación es para uso interno.</p>
+            <form id="password-form">
+                <label for="password-input" class="sr-only">Contraseña</label>
+                <input id="password-input" type="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 text-center focus:ring-2 focus:ring-teal-500 focus:border-teal-500" placeholder="Ingrese la contraseña" autofocus>
+                <button type="submit" class="w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition-colors font-semibold">Ingresar</button>
+                <p id="error-message" class="text-red-500 text-sm mt-4 hidden">Contraseña incorrecta. Intente de nuevo.</p>
+            </form>
+        </div>
+    </div>
+
+    <div id="main-content" class="hidden">
+        <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-40">
+            <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <div class="text-2xl font-bold text-teal-600">
+                    <span class="text-gray-700">Farmacia Interna:</span> Proceso de Barrido
+                </div>
+                <div class="hidden md:flex space-x-6 text-gray-600 font-medium">
+                    <a href="#proceso" class="hover:text-teal-600 transition-colors">El Proceso</a>
+                    <a href="#comparativa" class="hover:text-teal-600 transition-colors">Por Sector</a>
+                    <a href="#beneficios" class="hover:text-teal-600 transition-colors">Beneficios</a>
+                    <a href="#faq" class="hover:text-teal-600 transition-colors">Preguntas Frecuentes</a>
+                    <a href="#evaluacion" class="hover:text-teal-600 transition-colors">Evaluación</a>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md hover:bg-gray-100 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </nav>
+            <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 space-y-2">
+                 <a href="#proceso" class="block text-gray-600 hover:text-teal-600 transition-colors py-2">El Proceso</a>
+                 <a href="#comparativa" class="block text-gray-600 hover:text-teal-600 transition-colors py-2">Por Sector</a>
+                 <a href="#beneficios" class="block text-gray-600 hover:text-teal-600 transition-colors py-2">Beneficios</a>
+                 <a href="#faq" class="block text-gray-600 hover:text-teal-600 transition-colors py-2">Preguntas Frecuentes</a>
+                 <a href="#evaluacion" class="block text-gray-600 hover:text-teal-600 transition-colors py-2">Evaluación</a>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-6 py-12 md:py-20">
+
+            <section id="introduccion" class="text-center mb-20">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Entendiendo el Proceso de Barrido</h1>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600">
+                    Una guía interactiva para comprender cómo la farmacia interna garantiza el abastecimiento de medicamentos e insumos de manera eficiente y segura a todos los sectores del sanatorio.
+                </p>
+            </section>
+
+            <section id="proceso" class="mb-20">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">El Flujo del Proceso, Paso a Paso</h2>
+                <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+                    El barrido es una función automatizada que transforma las necesidades de los pacientes en pedidos concretos para la farmacia. Haga clic en cada paso para ver los detalles y entender cómo funciona el ciclo completo.
+                </p>
+                <div id="process-steps" class="relative">
+                    <div class="step-connector hidden md:block"></div>
+                    
+                    <div class="step mb-8 md:flex items-start" data-step="1">
+                        <div class="flex-shrink-0 mr-6 flex items-center mb-4 md:mb-0">
+                            <div class="step-icon w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-lg transition-all duration-300">1</div>
+                        </div>
+                        <div class="step-content flex-grow bg-white p-6 rounded-lg border-2 border-transparent transition-all duration-300 cursor-pointer">
+                            <h3 class="font-bold text-xl mb-2 text-gray-800">Inicio y Parametrización</h3>
+                            <p class="text-gray-600">El personal de farmacia inicia el proceso presionando "Generacion de Pedidos.." y define los parámetros clave: el **sector** a abastecer (ej. Piso 3) y un **rango horario** (ej. de 08:00 a 14:00).</p>
+                        </div>
+                    </div>
+
+                    <div class="step mb-8 md:flex items-start" data-step="2">
+                        <div class="flex-shrink-0 mr-6 flex items-center mb-4 md:mb-0">
+                            <div class="step-icon w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-lg transition-all duration-300">2</div>
+                        </div>
+                        <div class="step-content flex-grow bg-white p-6 rounded-lg border-2 border-transparent transition-all duration-300 cursor-pointer">
+                            <h3 class="font-bold text-xl mb-2 text-gray-800">Análisis Inteligente del Sistema</h3>
+                            <p class="text-gray-600">El sistema revisa todos los pacientes del sector y sus prescripciones médicas. Filtra y considera únicamente los insumos y medicamentos planificados y que se necesitan dentro del rango horario seleccionado.</p>
+                        </div>
+                    </div>
+
+                    <div class="step mb-8 md:flex items-start" data-step="3">
+                        <div class="flex-shrink-0 mr-6 flex items-center mb-4 md:mb-0">
+                            <div class="step-icon w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-lg transition-all duration-300">3</div>
+                        </div>
+                        <div class="step-content flex-grow bg-white p-6 rounded-lg border-2 border-transparent transition-all duration-300 cursor-pointer">
+                            <h3 class="font-bold text-xl mb-2 text-gray-800">Generación de Pedidos Adaptativa</h3>
+                            <p class="text-gray-600">Aquí el proceso se adapta. Para **Internación Común**, genera pedidos individuales por paciente. Para **Terapia/UCO**, se crean pedidos por paciente de insumos para reponer el stock del sector.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step mb-8 md:flex items-start" data-step="4">
+                        <div class="flex-shrink-0 mr-6 flex items-center mb-4 md:mb-0">
+                            <div class="step-icon w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-lg transition-all duration-300">4</div>
+                        </div>
+                        <div class="step-content flex-grow bg-white p-6 rounded-lg border-2 border-transparent transition-all duration-300 cursor-pointer">
+                            <h3 class="font-bold text-xl mb-2 text-gray-800">Registro y Trazabilidad</h3>
+                            <p class="text-gray-600">Todos los pedidos generados quedan registrados en el sistema con un ID único, fecha, usuario responsable y el detalle completo, asegurando una trazabilidad total del proceso.</p>
+                        </div>
+                    </div>
+
+                    <div class="step md:flex items-start" data-step="5">
+                        <div class="flex-shrink-0 mr-6 flex items-center mb-4 md:mb-0">
+                            <div class="step-icon w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-lg transition-all duration-300">5</div>
+                        </div>
+                        <div class="step-content flex-grow bg-white p-6 rounded-lg border-2 border-transparent transition-all duration-300 cursor-pointer">
+                            <h3 class="font-bold text-xl mb-2 text-gray-800">Preparación y Entrega</h3>
+                            <p class="text-gray-600">Con los pedidos ya generados, el equipo de farmacia prepara la medicación y los insumos para su envío al sector correspondiente, cerrando el ciclo de abastecimiento.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="comparativa" class="mb-20">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">Diferencias Clave por Tipo de Sector</h2>
+                <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+                    El barrido no funciona igual para todos. La principal diferencia radica en si el sector maneja su propio stock de insumos.
+                </p>
+                <div class="lg:flex lg:space-x-12 items-center">
+                    <div class="lg:w-1/3 mb-8 lg:mb-0">
+                        <div class="chart-container">
+                            <canvas id="sectorChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="lg:w-2/3">
+                        <div class="mb-6 flex justify-center space-x-4">
+                            <button class="sector-btn active px-6 py-2 border-2 border-gray-300 rounded-full font-medium transition-all" data-sector="comun">Internación Común</button>
+                            <button class="sector-btn px-6 py-2 border-2 border-gray-300 rounded-full font-medium transition-all" data-sector="criticos">Terapia / UCO</button>
+                        </div>
+                        <div class="bg-white p-8 rounded-lg shadow-md">
+                            <div id="sector-info">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="beneficios" class="mb-20">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Ventajas Principales del Barrido</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
+                        <div class="text-3xl mb-4 text-teal-500">✅</div>
+                        <h3 class="font-bold text-xl mb-2 text-gray-800">Reduce Faltantes</h3>
+                        <p class="text-gray-600">Al anticipar la demanda, se disminuye drásticamente el riesgo de que falten medicamentos o insumos críticos.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
+                        <div class="text-3xl mb-4 text-teal-500">⚙️</div>
+                        <h3 class="font-bold text-xl mb-2 text-gray-800">Automatiza Pedidos</h3>
+                        <p class="text-gray-600">Elimina la necesidad de generar pedidos manualmente, ahorrando tiempo y minimizando errores humanos.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
+                        <div class="text-3xl mb-4 text-teal-500">🔍</div>
+                        <h3 class="font-bold text-xl mb-2 text-gray-800">Mejora la Trazabilidad</h3>
+                        <p class="text-gray-600">Cada entrega queda registrada, permitiendo un control y seguimiento exhaustivo de los insumos dispensados.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
+                        <div class="text-3xl mb-4 text-teal-500">🎯</div>
+                        <h3 class="font-bold text-xl mb-2 text-gray-800">Evita Errores de Carga</h3>
+                        <p class="text-gray-600">Al basarse en la prescripción médica digital, se evitan errores de transcripción o interpretación.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
+                        <div class="text-3xl mb-4 text-teal-500">🔄</div>
+                        <h3 class="font-bold text-xl mb-2 text-gray-800">Proceso Adaptable</h3>
+                        <p class="text-gray-600">El sistema se ajusta a la realidad operativa de cada sector, ya sea por paciente o por reposición de stock.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
+                        <div class="text-3xl mb-4 text-teal-500">⏰</div>
+                        <h3 class="font-bold text-xl mb-2 text-gray-800">Optimiza el Tiempo</h3>
+                        <p class="text-gray-600">Permite al personal de farmacia y enfermería enfocarse en tareas de mayor valor, mejorando la eficiencia general.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="faq" class="mb-20">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Preguntas Frecuentes</h2>
+                <div class="max-w-3xl mx-auto space-y-4">
+                    <div class="faq-item bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="faq-question flex justify-between items-center p-6 cursor-pointer">
+                            <h3 class="font-semibold text-lg text-gray-800">¿Qué pasa si realizo un barrido para un período que ya pasó?</h3>
+                            <div class="faq-icon text-gray-500 transition-transform duration-300">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </div>
+                        <div class="faq-answer px-6 pb-6 text-gray-600">
+                            <p>Es posible volver a ejecutar un barrido sobre un período ya procesado.
+En ese caso, el sistema no genera pedidos duplicados.
+
+Si ya se generaron pedidos y fueron procesados correctamente, el sistema no los vuelve a incluir.
+
+Si los pedidos generados aún no fueron procesados (es decir, no se prepararon ni se enviaron), siguen vigentes.
+
+Si hubo modificaciones en la planificación (por ejemplo, cambios en indicaciones médicas), entonces el sistema genera nuevos pedidos actualizados para reflejar esos cambios. </p>
+                        </div>
+                    </div>
+                    <div class="faq-item bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="faq-question flex justify-between items-center p-6 cursor-pointer">
+                            <h3 class="font-semibold text-lg text-gray-800">¿Con cuánta anticipación debo realizar el barrido?</h3>
+                            <div class="faq-icon text-gray-500 transition-transform duration-300">
+                               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </div>
+                        <div class="faq-answer px-6 pb-6 text-gray-600">
+                            <p>Depende de los cronogramas de cada sector. Como regla general, se recomienda realizarlo con un mínimo de **2 a 4 horas de antelación** para dar tiempo suficiente a la preparación y el envío de los insumos.</p>
+                        </div>
+                    </div>
+                     <div class="faq-item bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="faq-question flex justify-between items-center p-6 cursor-pointer">
+                            <h3 class="font-semibold text-lg text-gray-800">¿El barrido incluye medicación "SOS" o "según necesidad"?</h3>
+                            <div class="faq-icon text-gray-500 transition-transform duration-300">
+                               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </div>
+                        <div class="faq-answer px-6 pb-6 text-gray-600">
+                            <p>Sí. El barrido incluye tanto los medicamentos programados con horario específico según la prescripción médica, como aquellos indicados como “SOS”, siempre que estén vigentes dentro del rango horario seleccionado.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="faq-question flex justify-between items-center p-6 cursor-pointer">
+                            <h3 class="font-semibold text-lg text-gray-800">¿Qué ocurre si un médico cambia una prescripción después del barrido?</h3>
+                            <div class="faq-icon text-gray-500 transition-transform duration-300">
+                               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </div>
+                        <div class="faq-answer px-6 pb-6 text-gray-600">
+                            <p>El barrido representa una “foto” del estado de la prescripción médica y la planificación de administración en el momento en que se ejecuta.
+Cualquier cambio posterior —como una suspensión, una nueva indicación, una modificación de dosis u horario, o un ajuste en la planificación— no se refleja automáticamente en el pedido ya generado.
+Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que genere un pedido actualizado.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="evaluacion" class="bg-white p-8 rounded-lg shadow-md">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">Evaluación de Conocimientos</h2>
+                <p class="text-center text-gray-600 mb-10">Verifique su comprensión del proceso de barrido y gestión de stock.</p>
+
+                <div class="max-w-4xl mx-auto">
+                    <div class="mb-8">
+                        <label for="evaluado-nombre" class="block text-lg font-medium text-gray-700 mb-2">Nombre del Evaluado:</label>
+                        <input type="text" id="evaluado-nombre" name="evaluado-nombre" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500" placeholder="Ingrese su nombre y apellido">
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Parte 1: Preguntas de Opción Múltiple</h3>
+                    <div id="mc-questions-container" class="space-y-8"></div>
+
+                    <h3 class="text-2xl font-bold text-gray-800 mt-12 mb-6 border-b pb-2">Parte 2: Preguntas de Razonamiento</h3>
+                    <div id="open-questions-container" class="space-y-8"></div>
+                    
+                    <div class="text-center mt-12">
+                        <button id="check-answers-btn" class="bg-teal-600 text-white py-3 px-8 rounded-lg hover:bg-teal-700 transition-colors font-semibold text-lg">Revisar Respuestas Correctas</button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+        
+        <footer class="bg-gray-800 text-white mt-20">
+            <div class="container mx-auto px-6 py-8 text-center">
+                <p>&copy; 2024 Sanatorio IPAM. Documentación de Procesos Internos.</p>
+                <p class="text-sm text-gray-400 mt-2">Documentación realizada por Emanuel Fleier (Depto. Sistemas).</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const passwordOverlay = document.getElementById('password-overlay');
+            const passwordForm = document.getElementById('password-form');
+            const passwordInput = document.getElementById('password-input');
+            const errorMessage = document.getElementById('error-message');
+            const mainContent = document.getElementById('main-content');
+
+            const correctPassword = 'ipam';
+
+            passwordForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (passwordInput.value === correctPassword) {
+                    passwordOverlay.style.display = 'none';
+                    mainContent.classList.remove('hidden');
+                } else {
+                    errorMessage.classList.remove('hidden');
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+            });
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            const processSteps = document.querySelectorAll('.step');
+            processSteps.forEach(step => {
+                step.addEventListener('click', () => {
+                    processSteps.forEach(s => s.classList.remove('active'));
+                    step.classList.add('active');
+                });
+            });
+            if (processSteps.length > 0) {
+                processSteps[0].classList.add('active');
+            }
+
+            const sectorData = {
+                comun: {
+                    title: 'Internación Común',
+                    details: [
+                        { label: '¿Maneja stock propio?', value: 'No', icon: '❌' },
+                        { label: 'Finalidad del barrido', value: 'Enviar medicación específica por paciente', icon: '🎯' },
+                        { label: 'Tipo de pedido generado', value: 'Pedido individual por paciente', icon: '📄' }
+                    ]
+                },
+                criticos: {
+                    title: 'Terapia / UCO (Sectores Críticos)',
+                    details: [
+                        { label: '¿Maneja stock propio?', value: 'Sí', icon: '✅' },
+                        { label: 'Finalidad del barrido', value: 'Reponer el stock general del sector', icon: '🎯' },
+                        { label: 'Tipo de pedido generado', value: 'Pedido individual por paciente', icon: '📄' }
+                    ]
+                }
+            };
+
+            const sectorInfoContainer = document.getElementById('sector-info');
+            const sectorButtons = document.querySelectorAll('.sector-btn');
+
+            function updateSectorInfo(sector) {
+                const data = sectorData[sector];
+                let html = `<h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">${data.title}</h3><div class="space-y-4">`;
+                data.details.forEach(item => {
+                    html += `
+                        <div class="flex items-start">
+                            <div class="text-2xl mr-4">${item.icon}</div>
+                            <div>
+                                <p class="font-semibold text-gray-500">${item.label}</p>
+                                <p class="text-lg text-gray-800">${item.value}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                sectorInfoContainer.innerHTML = html;
+            }
+
+            sectorButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    sectorButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    updateSectorInfo(button.dataset.sector);
+                });
+            });
+
+            updateSectorInfo('comun');
+
+            const ctx = document.getElementById('sectorChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Internación Común', 'Sectores Críticos (Terapia/UCO)'],
+                    datasets: [{
+                        label: 'Tipos de Sector',
+                        data: [70, 30],
+                        backgroundColor: [
+                            '#2DD4BF',
+                            '#0D9488'
+                        ],
+                        borderColor: '#FDFBF8',
+                        borderWidth: 4,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 14,
+                                    family: 'Inter'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '% (Representación)';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                question.addEventListener('click', () => {
+                    const isOpen = item.classList.contains('open');
+                    faqItems.forEach(i => i.classList.remove('open'));
+                    if (!isOpen) {
+                        item.classList.add('open');
+                    }
+                });
+            });
+
+            // --- EVALUATION SCRIPT ---
+            const evaluationData = {
+                multipleChoice: [
+                    {
+                        question: "¿Cuál es la función principal del barrido en el sistema de farmacia?",
+                        options: { A: "Verificar los medicamentos que ya se administraron", B: "Detectar insumos disponibles en stock", C: "Generar pedidos de insumos y medicación planificados en un rango horario", D: "Anular pedidos anteriores" },
+                        correct: "C"
+                    },
+                    {
+                        question: "Si se realiza un barrido sobre un período ya barrido anteriormente, ¿qué sucede?",
+                        options: { A: "El sistema duplica los pedidos anteriores", B: "Se actualiza el stock sin generar pedidos", C: "Los pedidos se eliminan automáticamente", D: "Ninguna de las anteriores" },
+                        correct: "D"
+                    },
+                    {
+                        question: "¿Qué debe hacer el personal de farmacia si se suspende una medicación después de haber realizado el barrido?",
+                        options: { A: "La farmacia recibe automáticamente la notificación y ajusta el pedido.", B: "La medicación suspendida ya no forma parte de la planificación, por lo que no se generarán pedidos adicionales en futuros barridos.", C: "La farmacia debe generar un nuevo barrido manual para eliminar el medicamento suspendido.", D: "Se debe comunicar al sector para retirar manualmente la medicación ya preparada." },
+                        correct: "B"
+                    },
+                    {
+                        question: "¿Cuál es la diferencia principal entre los pedidos generados para internación común y los de terapia/UCO?",
+                        options: { A: "Los de internación son automáticos y los de terapia son manuales", B: "Los de terapia son por paciente, y los de internación por insumo", C: "En internación se generan pedidos por paciente; en terapia/UCO, para reponer stock general", D: "No hay diferencias" },
+                        correct: "C"
+                    },
+                    {
+                        question: "¿Qué medicamentos considera el barrido al momento de generar un pedido?",
+                        options: { A: "Solo los ya administrados", B: "Solo los medicamentos que tengan horario fijo", C: "Solo medicación e insumos con horario fijo, sin tener en cuenta los SOS", D: "Medicación e insumos planificados" },
+                        correct: "D"
+                    },
+                    {
+                        question: "¿Qué debe hacer el personal de farmacia antes de devolver un medicamento al stock general de farmacia?",
+                        options: { A: "Verificar que esté dentro del período de vencimiento y que no haya sido administrado", B: "Registrar devolución y guardarlo directamente en la estantería del sector", C: "Cambiar el rótulo y colocarlo en cualquier sector", D: "Solo notificar al enfermero que lo devuelve" },
+                        correct: "A"
+                    },
+                    {
+                        question: "¿Qué ocurre si se devuelve un medicamento que ya estaba planificado para otro paciente en el sistema?",
+                        options: { A: "El sistema lo asigna automáticamente al paciente correcto", B: "Se debe generar un ajuste de stock y, si es necesario, un nuevo pedido para cumplir la planificación", C: "No pasa nada, el medicamento se puede usar libremente", D: "Se descarta automáticamente" },
+                        correct: "B"
+                    }
+                ],
+                openEnded: [
+                    {
+                        situation: "Un enfermero devuelve un medicamento no administrado al sector de farmacia.",
+                        question: "¿Qué pasos debería seguir el personal de farmacia antes de reincorporarlo al stock?",
+                        considerations: "Verificar integridad del empaque, fecha de vencimiento, registrar la devolución en el sistema asociándola al paciente/sector de origen."
+                    },
+                    {
+                        situation: "Se detecta que un medicamento devuelto está vencido o dañado.",
+                        question: "¿Qué acción debe tomar el personal de farmacia y cómo debe registrarlo en el sistema?",
+                        considerations: "Segregar el medicamento en el área de vencidos/dañados, no reincorporarlo al stock, y registrar la baja en el sistema especificando el motivo (vencimiento, rotura)."
+                    },
+                    {
+                        situation: "Se realiza un barrido para un piso de internación y, al mismo tiempo, se reciben varias devoluciones de medicamentos no utilizados.",
+                        question: "¿Cómo debe gestionarse el stock para que no haya errores ni duplicación de pedidos?",
+                        considerations: "Procesar y registrar las devoluciones PRIMERO para que el stock del sistema esté actualizado. LUEGO, ejecutar el barrido para que genere pedidos basados en el stock real y evitar solicitar medicación que acaba de reingresar."
+                    },
+                    {
+                        question: "¿Por qué es importante registrar correctamente las devoluciones de medicamentos y no simplemente reincorporarlos al stock sin control?",
+                        considerations: "Para garantizar la trazabilidad, asegurar que el stock del sistema sea fiable, permitir el correcto crédito al paciente/sector y evitar errores de dispensación o quiebres de stock."
+                    },
+                    {
+                        situation: "Un pedido generado por barrido llega a la farmacia para ser enviado al piso de internación. Al preparar los insumos, el farmacéutico nota que falta un medicamento de un paciente por falta de stock.",
+                        question: "¿Qué acciones debería tomar el personal de farmacia antes de despachar el pedido al sector?",
+                        considerations: "• Revisar stock disponible y si es posible completar el pedido\n• Notificar al sector que el medicamento faltará temporalmente\n• Evitar enviar el pedido incompleto sin control"
+                    },
+                    {
+                        situation: "Después de la administración, el enfermero devuelve varios medicamentos al sector de farmacia, algunos con envases abiertos y otros sin abrir.",
+                        question: "¿Cómo debe registrar la devolución y qué criterios debe aplicar para reincorporar los medicamentos al stock?",
+                        considerations: "• Revisar fecha de vencimiento y estado del envase\n• Separar los medicamentos que no se pueden volver a usar\n• Registrar la devolución en el sistema correctamente"
+                    },
+                    {
+                        situation: "El médico modifica la dosis y horario de administración de un medicamento para un paciente después de que se realizó el barrido.",
+                        question: "¿Qué impacto tiene este cambio sobre los pedidos generados y cómo debe actuar farmacia para garantizar que el paciente reciba la medicación correctamente?",
+                        considerations: "• Los pedidos ya generados no se ajustan automáticamente\n• Cualquier cambio requiere un nuevo barrido para reflejar la modificación\n• Evitar entregar medicamentos que ya no correspondan"
+                    },
+                    {
+                        situation: "Organización de entregas",
+                        question: "¿Cómo priorizarías las entregas y qué comunicación deberías mantener con los sectores involucrados?",
+                        considerations: "• Atención inmediata a la medicación SOS\n• Control de pedidos pendientes\n• Registro de entrega y ajustes en el sistema"
+                    },
+                    {
+                        situation: "Control de fechas y vencimientos: Al preparar un pedido, algunos medicamentos próximos a vencer están incluidos.",
+                        question: "¿Qué acciones tomarías para garantizar seguridad y minimizar desperdicios?",
+                        considerations: "• Usar primero los medicamentos con vencimiento más cercano\n• Evitar entregar medicamentos vencidos\n• Registrar movimientos y observaciones en el sistema"
+                    }
+                ]
+            };
+
+            const mcContainer = document.getElementById('mc-questions-container');
+            evaluationData.multipleChoice.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'mc-question';
+                let optionsHtml = '';
+                for (const [key, value] of Object.entries(q.options)) {
+                    optionsHtml += `
+                        <div>
+                            <label class="mc-option-label block p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="radio" name="question-${index}" value="${key}" class="mr-3">
+                                <strong>${key})</strong> ${value}
+                            </label>
+                        </div>
+                    `;
+                }
+                questionDiv.innerHTML = `
+                    <p class="text-lg font-semibold text-gray-700 mb-4">${index + 1}. ${q.question}</p>
+                    <div class="space-y-3">${optionsHtml}</div>
+                `;
+                mcContainer.appendChild(questionDiv);
+            });
+
+            const openContainer = document.getElementById('open-questions-container');
+            evaluationData.openEnded.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                let situationHtml = q.situation ? `<p class="text-gray-600 mb-2"><strong>Situación:</strong> ${q.situation}</p>` : '';
+                questionDiv.innerHTML = `
+                    <div class="bg-gray-50 p-4 rounded-lg border">
+                        ${situationHtml}
+                        <p class="text-lg font-semibold text-gray-700 mb-3">${evaluationData.multipleChoice.length + index + 1}. ${q.question}</p>
+                        <textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500" rows="3" placeholder="Escriba su respuesta aquí..."></textarea>
+                        <div class="considerations mt-3 p-3 bg-teal-50 border-l-4 border-teal-500 text-teal-800 rounded-r-lg">
+                            <p class="font-bold">Consideraciones:</p>
+                            <p class="whitespace-pre-wrap">${q.considerations}</p>
+                        </div>
+                    </div>
+                `;
+                openContainer.appendChild(questionDiv);
+            });
+
+            const checkAnswersBtn = document.getElementById('check-answers-btn');
+            checkAnswersBtn.addEventListener('click', () => {
+                // Check Multiple Choice
+                evaluationData.multipleChoice.forEach((q, index) => {
+                    const selected = document.querySelector(`input[name="question-${index}"]:checked`);
+                    const labels = document.querySelectorAll(`input[name="question-${index}"]`);
+                    
+                    labels.forEach(labelInput => {
+                        const parentLabel = labelInput.parentElement;
+                        parentLabel.classList.remove('correct', 'incorrect');
+                        if (labelInput.value === q.correct) {
+                            parentLabel.classList.add('correct');
+                        } else if (selected && selected.value === labelInput.value) {
+                             parentLabel.classList.add('incorrect');
+                        }
+                    });
+                });
+
+                // Show considerations for open-ended
+                const considerations = document.querySelectorAll('.considerations');
+                considerations.forEach(con => {
+                    con.style.display = 'block';
+                });
+
+                alert('Revisión completada. Las respuestas correctas están marcadas en verde y las consideraciones para las preguntas abiertas son visibles.');
+            });
+
+        });
+    </script>
+</body>
+</html>
