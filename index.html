@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Warm Neutrals with Teal Accent -->
     <!-- Application Structure Plan: Se ha diseñado una SPA de una sola página con desplazamiento vertical y una barra de navegación fija. La estructura se divide en secciones temáticas: 1) Introducción, 2) Flujo del Proceso Interactivo, 3) Comparativa por Sector, 4) Beneficios Clave, 5) Preguntas Frecuentes y 6) Evaluación. Esta arquitectura fue elegida para transformar un documento procedimental en una guía de aprendizaje y evaluación interactiva. -->
-    <!-- Visualization & Content Choices: 1. Flujo del Proceso: Se reemplazó el diagrama estático por una secuencia de pasos interactivos en HTML/CSS. 2. Comparativa de Sectores: Se usó un gráfico de dona (Chart.js) y botones interactivos. 3. Beneficios: Se presentan en tarjetas con íconos (Unicode). 4. FAQ: Se implementó un acordeón con JS. 5. Evaluación: Se añadió una sección con preguntas de opción múltiple y abiertas, con un botón de revisión final para mostrar las respuestas correctas. Justificación: Estas elecciones priorizan la interacción y la claridad visual para facilitar el aprendizaje y la evaluación de un proceso operativo. -->
+    <!-- Visualization & Content Choices: 1. Flujo del Proceso: Se reemplazó el diagrama estático por una secuencia de pasos interactivos en HTML/CSS. 2. Comparativa de Sectores: Se usó un gráfico de dona (Chart.js) y botones interactivos. 3. Beneficios: Se presentan en tarjetas con íconos (Unicode). 4. FAQ: Se implementó un acordeón con JS. 5. Evaluación: Se añadió una sección con preguntas de opción múltiple (única y múltiple), con un botón de revisión final protegido por contraseña para mostrar las respuestas correctas. Justificación: Estas elecciones priorizan la interacción y la claridad visual para facilitar el aprendizaje y la evaluación de un proceso operativo. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
@@ -73,10 +73,6 @@
             background-color: #FEE2E2;
             border-color: #EF4444;
             color: #991B1B;
-            text-decoration: line-through;
-        }
-        .considerations {
-            display: none;
         }
     </style>
 </head>
@@ -310,23 +306,29 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
             </section>
 
             <section id="evaluacion" class="bg-white p-8 rounded-lg shadow-md">
-                <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">Comprension de Conocimientos</h2>
-                <p class="text-center text-gray-600 mb-10"> Esta instancia evalúa contenidos previamente abordados durante las actividades de capacitación técnica.</p>
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">Evaluación de Conocimientos</h2>
+                <p class="text-center text-gray-600 mb-10">Verifique su comprensión del proceso de barrido y gestión de stock.</p>
 
                 <div class="max-w-4xl mx-auto">
                     <div class="mb-8">
                         <label for="evaluado-nombre" class="block text-lg font-medium text-gray-700 mb-2">Nombre del Evaluado:</label>
                         <input type="text" id="evaluado-nombre" name="evaluado-nombre" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500" placeholder="Ingrese su nombre y apellido">
+                        <div class="text-center mt-4">
+                            <button id="start-evaluation-btn" class="bg-teal-600 text-white py-2 px-6 rounded-lg hover:bg-teal-700 transition-colors font-semibold">Comenzar Evaluación</button>
+                            <p id="name-error" class="text-red-500 text-sm mt-2 hidden">Por favor, ingrese su nombre para comenzar.</p>
+                        </div>
                     </div>
 
-                    <h3 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Parte 1: Preguntas de Opción Múltiple</h3>
-                    <div id="mc-questions-container" class="space-y-8"></div>
+                    <div id="evaluation-content" class="hidden">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Parte 1: Comprensión técnica</h3>
+                        <div id="mc-questions-container-1" class="space-y-8"></div>
 
-                    <h3 class="text-2xl font-bold text-gray-800 mt-12 mb-6 border-b pb-2">Parte 2: Preguntas de Razonamiento</h3>
-                    <div id="open-questions-container" class="space-y-8"></div>
-                    
-                    <div class="text-center mt-12">
-                        <button id="check-answers-btn" class="bg-teal-600 text-white py-3 px-8 rounded-lg hover:bg-teal-700 transition-colors font-semibold text-lg">Revisar Respuestas Correctas</button>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-12 mb-6 border-b pb-2">Parte 2: Situaciones prácticas complejas</h3>
+                        <div id="mc-questions-container-2" class="space-y-8"></div>
+                        
+                        <div class="text-center mt-12">
+                            <button id="check-answers-btn" class="bg-teal-600 text-white py-3 px-8 rounded-lg hover:bg-teal-700 transition-colors font-semibold text-lg">Revisar Respuestas Correctas</button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -335,7 +337,7 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
         
         <footer class="bg-gray-800 text-white mt-20">
             <div class="container mx-auto px-6 py-8 text-center">
-                <p>&copy; 2024 - 2025 Sanatorio IPAM. Documentación de Procesos Internos.</p>
+                <p>&copy; 2024 -2025 Sanatorio IPAM. Documentación de Procesos Internos.</p>
                 <p class="text-sm text-gray-400 mt-2">Documentación realizada por Emanuel Fleier (Depto. Sistemas).</p>
             </div>
         </footer>
@@ -494,102 +496,116 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
             });
 
             // --- EVALUATION SCRIPT ---
+            const nameInput = document.getElementById('evaluado-nombre');
+            const startEvaluationBtn = document.getElementById('start-evaluation-btn');
+            const nameError = document.getElementById('name-error');
+            const evaluationContent = document.getElementById('evaluation-content');
+
+            startEvaluationBtn.addEventListener('click', () => {
+                if (nameInput.value.trim() === '') {
+                    nameError.classList.remove('hidden');
+                } else {
+                    nameError.classList.add('hidden');
+                    evaluationContent.classList.remove('hidden');
+                    nameInput.disabled = true;
+                    startEvaluationBtn.parentElement.style.display = 'none';
+                }
+            });
+
             const evaluationData = {
                 multipleChoice: [
                     {
-                        question: "¿Cuál es la función principal del barrido en el sistema de farmacia?",
-                        options: { A: "Verificar los medicamentos que ya se administraron", B: "Detectar insumos disponibles en stock", C: "Generar pedidos de insumos y medicación planificados en un rango horario", D: "Anular pedidos anteriores" },
-                        correct: "C"
+                        question: "¿Cuál es el objetivo del barrido realizado por farmacia en sectores sin stock propio, como internación general?",
+                        options: { A: "Confirmar que todos los medicamentos hayan sido administrados correctamente", B: "Identificar los medicamentos que podrían reutilizarse en otros sectores", C: "Anticiparse a las necesidades de cada paciente generando pedidos por planificación futura", D: "Realizar auditorías retrospectivas sobre tratamientos administrados" },
+                        correct: ["C"], type: 'single'
                     },
                     {
-                        question: "Si se realiza un barrido sobre un período ya barrido anteriormente, ¿qué sucede?",
-                        options: { A: "El sistema duplica los pedidos anteriores", B: "Se actualiza el stock sin generar pedidos", C: "Los pedidos se eliminan automáticamente", D: "Ninguna de las anteriores" },
-                        correct: "D"
+                        question: "Al realizar un barrido en un rango horario que ya fue previamente procesado, el sistema:",
+                        options: { A: "Reemplaza los pedidos anteriores por versiones más recientes", B: "Genera alertas de duplicación y detiene el proceso", C: "No vuelve a generar pedidos para lo que ya fue procesado", D: "Elimina automáticamente los pedidos previos y vuelve a generarlos" },
+                        correct: ["C"], type: 'single'
                     },
                     {
-                        question: "¿Qué debe hacer el personal de farmacia si se suspende una medicación después de haber realizado el barrido?",
-                        options: { A: "La farmacia recibe automáticamente la notificación y ajusta el pedido.", B: "La medicación suspendida ya no forma parte de la planificación, por lo que no se generarán pedidos adicionales en futuros barridos.", C: "La farmacia debe generar un nuevo barrido manual para eliminar el medicamento suspendido.", D: "Se debe comunicar al sector para retirar manualmente la medicación ya preparada." },
-                        correct: "B"
+                        question: "¿Cuándo se considera que se van a generar nuevos pedidos para pacientes luego de un barrido previo?",
+                        options: { A: "Siempre que haya un cambio en la planificación o en la medicación indicada", B: "Cuando el médico repite la indicación sin modificar horario o dosis", C: "Solo si se han entregado todos los insumos anteriores", D: "Si el sistema detecta devoluciones desde el sector" },
+                        correct: ["A"], type: 'single'
                     },
                     {
-                        question: "¿Cuál es la diferencia principal entre los pedidos generados para internación común y los de terapia/UCO?",
-                        options: { A: "Los de internación son automáticos y los de terapia son manuales", B: "Los de terapia son por paciente, y los de internación por insumo", C: "En internación se generan pedidos por paciente; en terapia/UCO, para reponer stock general", D: "No hay diferencias" },
-                        correct: "C"
+                        question: "En sectores como Terapia Intensiva o UCO, ¿Cual es el motivo principal de la generacion de pedidos (barridos)?",
+                        options: { A: "Porque estos sectores utilizan prescripción médicas individualizada", B: "Porque los medicamentos se administran a demanda sin planificación", C: "Porque mantienen stock en depósito, y el barrido sirve para reponer lo consumido.", D: "Porque ambos sectores comparten stock" },
+                        correct: ["C"], type: 'single'
                     },
                     {
-                        question: "¿Qué medicamentos considera el barrido al momento de generar un pedido?",
-                        options: { A: "Solo los ya administrados", B: "Solo los medicamentos que tengan horario fijo", C: "Solo medicación e insumos con horario fijo, sin tener en cuenta los SOS", D: "Medicación e insumos planificados" },
-                        correct: "D"
+                        question: "¿Qué tipo de medicación/insumos es incluida por el sistema en un barrido? (selección múltiple)",
+                        options: { A: "Medicación pautada con horario fijo", B: "Medicación \"SOS\" activa en la planificacion", C: "Insumos registrados como \"entregados previamente\"", D: "Medicación suspendida luego del barrido" },
+                        correct: ["A", "B"], type: 'multiple'
                     },
                     {
-                        question: "¿Qué debe hacer el personal de farmacia antes de devolver un medicamento al stock general de farmacia?",
-                        options: { A: "Verificar que esté dentro del período de vencimiento y que no haya sido administrado", B: "Registrar devolución y guardarlo directamente en la estantería del sector", C: "Cambiar el rótulo y colocarlo en cualquier sector", D: "Solo notificar al enfermero que lo devuelve" },
-                        correct: "A"
+                        question: "¿Cuál de las siguientes acciones debe realizar farmacia antes de reincorporar un medicamento al stock general?",
+                        options: { A: "Confirmar que no haya sido administrado y esté en condiciones adecuadas", B: "Validar en sistema que no esté planificado nuevamente", C: "Solicitar autorización médica antes de su reintegro", D: "Reetiquetar el producto para indicar que es reutilizable" },
+                        correct: ["A"], type: 'single'
                     },
                     {
-                        question: "¿Qué ocurre si se devuelve un medicamento que ya estaba planificado para otro paciente en el sistema?",
-                        options: { A: "El sistema lo asigna automáticamente al paciente correcto", B: "Se debe generar un ajuste de stock y, si es necesario, un nuevo pedido para cumplir la planificación", C: "No pasa nada, el medicamento se puede usar libremente", D: "Se descarta automáticamente" },
-                        correct: "B"
-                    }
-                ],
-                openEnded: [
-                    {
-                        situation: "Un enfermero devuelve un medicamento no administrado al sector de farmacia.",
-                        question: "¿Qué pasos debería seguir el personal de farmacia antes de reincorporarlo al stock?",
-                        considerations: "Verificar integridad del empaque, fecha de vencimiento, registrar la devolución en el sistema asociándola al paciente/sector de origen."
+                        question: "¿En qué situación el personal de farmacia no debería realizar un nuevo barrido?",
+                        options: { A: "Al recibir una nueva indicación médica urgente", B: "Si el barrido ya se hizo para ese período y no hubo cambios", C: "Cuando se modifica la planificación de horarios de medicación", D: "Si se agregan medicamentos nuevos a un paciente internado" },
+                        correct: ["C"], type: 'single'
                     },
                     {
-                        situation: "Se detecta que un medicamento devuelto está vencido o dañado.",
-                        question: "¿Qué acción debe tomar el personal de farmacia y cómo debe registrarlo en el sistema?",
-                        considerations: "Segregar el medicamento en el área de vencidos/dañados, no reincorporarlo al stock, y registrar la baja en el sistema especificando el motivo (vencimiento, rotura)."
+                        question: "¿Por qué no es recomendable realizar un barrido con una fecha y hora en el pasado?",
+                        options: { A: "Porque el sistema puede sobreescribir los registros clínicos", B: "Porque se generarían pedidos de insumos ya administrados o vencidos", C: "Porque se pierde trazabilidad de las entregas", D: "Ninguna de las anteriores" },
+                        correct: ["D"], type: 'single'
                     },
                     {
-                        situation: "Se realiza un barrido para un piso de internación y, al mismo tiempo, se reciben varias devoluciones de medicamentos no utilizados.",
-                        question: "¿Cómo debe gestionarse el stock para que no haya errores ni duplicación de pedidos?",
-                        considerations: "Procesar y registrar las devoluciones PRIMERO para que el stock del sistema esté actualizado. LUEGO, ejecutar el barrido para que genere pedidos basados en el stock real y evitar solicitar medicación que acaba de reingresar."
+                        question: "Al preparar un pedido generado por barrido, farmacia detecta que un insumo está próximo a vencer. ¿Qué debe hacer?",
+                        options: { A: "Utilizarlo primero si está dentro del rango de seguridad", B: "Cambiar el medicamento por otro del mismo grupo farmacológico", C: "Consultar con el médico tratante antes de incluirlo en el pedido", D: "Eliminarlo del pedido directamente" },
+                        correct: ["A"], type: 'single'
                     },
                     {
-                        question: "¿Por qué es importante registrar correctamente las devoluciones de medicamentos y no simplemente reincorporarlos al stock sin control?",
-                        considerations: "Para garantizar la trazabilidad, asegurar que el stock del sistema sea fiable, permitir el correcto crédito al paciente/sector y evitar errores de dispensación o quiebres de stock."
+                        question: "En caso de que el médico suspenda una medicación después de un barrido, ¿cómo se reflejará en el sistema?",
+                        options: { A: "El pedido original se cancela automáticamente", B: "La medicación suspendida deja de formar parte de la planificación futura y no se genera en nuevos pedidos", C: "El sistema genera una alerta en la interfaz de farmacia", D: "Se debe realizar una devolución manual del medicamento entregado" },
+                        correct: ["B"], type: 'single'
                     },
                     {
-                        situation: "Un pedido generado por barrido llega a la farmacia para ser enviado al piso de internación. Al preparar los insumos, el farmacéutico nota que falta un medicamento de un paciente por falta de stock.",
-                        question: "¿Qué acciones debería tomar el personal de farmacia antes de despachar el pedido al sector?",
-                        considerations: "• Revisar stock disponible y si es posible completar el pedido\n• Notificar al sector que el medicamento faltará temporalmente\n• Evitar enviar el pedido incompleto sin control"
+                        question: "Durante el registro de la devolución, un envase de medicación está abierto y sin registro de administración. ¿Qué procedimiento debe seguir farmacia?",
+                        options: { A: "Incorporarlo nuevamente al stock general si el contenido es suficiente", B: "Descartarlo como registro de devolucion y registrarlo con tal motivo en el sistema", C: "Realizar registro de la devolucion", D: "Notificar al sector de enfermería que el envase fue mal devuelto" },
+                        correct: ["C"], type: 'single'
                     },
                     {
-                        situation: "Después de la administración, el enfermero devuelve varios medicamentos al sector de farmacia, algunos con envases abiertos y otros sin abrir.",
-                        question: "¿Cómo debe registrar la devolución y qué criterios debe aplicar para reincorporar los medicamentos al stock?",
-                        considerations: "• Revisar fecha de vencimiento y estado del envase\n• Separar los medicamentos que no se pueden volver a usar\n• Registrar la devolución en el sistema correctamente"
+                        question: "Se reciben devoluciones al mismo tiempo que se genera un barrido. ¿Qué práctica garantiza una correcta gestión del stock?",
+                        options: { A: "Registrar las devoluciones después del barrido", B: "Realizar el barrido nuevamente después de actualizar las devoluciones", C: "Ignorar las devoluciones si no están en condiciones", D: "Procesar devoluciones y barrido en orden indistinto" },
+                        correct: ["B"], type: 'single'
                     },
                     {
-                        situation: "El médico modifica la dosis y horario de administración de un medicamento para un paciente después de que se realizó el barrido.",
-                        question: "¿Qué impacto tiene este cambio sobre los pedidos generados y cómo debe actuar farmacia para garantizar que el paciente reciba la medicación correctamente?",
-                        considerations: "• Los pedidos ya generados no se ajustan automáticamente\n• Cualquier cambio requiere un nuevo barrido para reflejar la modificación\n• Evitar entregar medicamentos que ya no correspondan"
+                        question: "¿Qué pasos deben seguirse si al preparar un pedido falta un insumo y no hay stock disponible? (respuestas múltiples)",
+                        options: { A: "Completar el resto del pedido y enviar", B: "Registrar la falta en sistema", C: "Informar al sector que el medicamento está en falta", D: "Generar una devolución parcial del pedido" },
+                        correct: ["A", "B", "C"], type: 'multiple'
                     },
                     {
-                        situation: "Organización de entregas",
-                        question: "¿Cómo priorizarías las entregas y qué comunicación deberías mantener con los sectores involucrados?",
-                        considerations: "• Atención inmediata a la medicación SOS\n• Control de pedidos pendientes\n• Registro de entrega y ajustes en el sistema"
+                        question: "En un turno nocturno, se encuentra un medicamento sin rotular ni registro asociado. ¿Cuál es la acción correcta del personal de farmacia?",
+                        options: { A: "Consultar con enfermería y, si no hay objeciones, reutilizarlo", B: "Registrar el hallazgo como incidente y separarlo para descarte", C: "Etiquetarlo como \"en cuarentena\" hasta su identificación", D: "Incorporarlo directamente como stock no asignado" },
+                        correct: ["B"], type: 'single'
                     },
                     {
-                        situation: "Control de fechas y vencimientos: Al preparar un pedido, algunos medicamentos próximos a vencer están incluidos.",
-                        question: "¿Qué acciones tomarías para garantizar seguridad y minimizar desperdicios?",
-                        considerations: "• Usar primero los medicamentos con vencimiento más cercano\n• Evitar entregar medicamentos vencidos\n• Registrar movimientos y observaciones en el sistema"
+                        question: "¿Qué función cumple el registro de devolución en el sistema? (respuestas múltiples)",
+                        options: { A: "Permite mejorar el proceso de facturacion de medicamento-insumos", B: "Permite trazabilidad del stock no utilizado", C: "Sustituye la necesidad de revisar fechas de vencimiento", D: "Controla que farmacia no reciba más de lo entregado" },
+                        correct: ["A", "B"], type: 'multiple'
                     }
                 ]
             };
 
-            const mcContainer = document.getElementById('mc-questions-container');
+            const mcContainer1 = document.getElementById('mc-questions-container-1');
+            const mcContainer2 = document.getElementById('mc-questions-container-2');
+
             evaluationData.multipleChoice.forEach((q, index) => {
                 const questionDiv = document.createElement('div');
                 questionDiv.className = 'mc-question';
                 let optionsHtml = '';
+                const inputType = q.type === 'multiple' ? 'checkbox' : 'radio';
+
                 for (const [key, value] of Object.entries(q.options)) {
                     optionsHtml += `
                         <div>
                             <label class="mc-option-label block p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                                <input type="radio" name="question-${index}" value="${key}" class="mr-3">
+                                <input type="${inputType}" name="question-${index}" value="${key}" class="mr-3 ${inputType === 'checkbox' ? 'rounded' : ''} text-teal-600 focus:ring-teal-500">
                                 <strong>${key})</strong> ${value}
                             </label>
                         </div>
@@ -599,52 +615,58 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
                     <p class="text-lg font-semibold text-gray-700 mb-4">${index + 1}. ${q.question}</p>
                     <div class="space-y-3">${optionsHtml}</div>
                 `;
-                mcContainer.appendChild(questionDiv);
-            });
-
-            const openContainer = document.getElementById('open-questions-container');
-            evaluationData.openEnded.forEach((q, index) => {
-                const questionDiv = document.createElement('div');
-                let situationHtml = q.situation ? `<p class="text-gray-600 mb-2"><strong>Situación:</strong> ${q.situation}</p>` : '';
-                questionDiv.innerHTML = `
-                    <div class="bg-gray-50 p-4 rounded-lg border">
-                        ${situationHtml}
-                        <p class="text-lg font-semibold text-gray-700 mb-3">${evaluationData.multipleChoice.length + index + 1}. ${q.question}</p>
-                        <textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500" rows="3" placeholder="Escriba su respuesta aquí..."></textarea>
-                        <div class="considerations mt-3 p-3 bg-teal-50 border-l-4 border-teal-500 text-teal-800 rounded-r-lg">
-                            <p class="font-bold">Consideraciones:</p>
-                            <p class="whitespace-pre-wrap">${q.considerations}</p>
-                        </div>
-                    </div>
-                `;
-                openContainer.appendChild(questionDiv);
+                
+                if (index < 8) {
+                    mcContainer1.appendChild(questionDiv);
+                } else {
+                    mcContainer2.appendChild(questionDiv);
+                }
             });
 
             const checkAnswersBtn = document.getElementById('check-answers-btn');
             checkAnswersBtn.addEventListener('click', () => {
-                // Check Multiple Choice
-                evaluationData.multipleChoice.forEach((q, index) => {
-                    const selected = document.querySelector(`input[name="question-${index}"]:checked`);
-                    const labels = document.querySelectorAll(`input[name="question-${index}"]`);
-                    
-                    labels.forEach(labelInput => {
-                        const parentLabel = labelInput.parentElement;
-                        parentLabel.classList.remove('correct', 'incorrect');
-                        if (labelInput.value === q.correct) {
-                            parentLabel.classList.add('correct');
-                        } else if (selected && selected.value === labelInput.value) {
-                             parentLabel.classList.add('incorrect');
+                const reviewPassword = '31252025';
+                const enteredPassword = prompt('Ingrese la contraseña numérica para revisar las respuestas:');
+
+                if (enteredPassword === reviewPassword) {
+                    evaluationData.multipleChoice.forEach((q, index) => {
+                        const inputs = document.querySelectorAll(`input[name="question-${index}"]`);
+                        
+                        if (q.type === 'single') {
+                            const selected = document.querySelector(`input[name="question-${index}"]:checked`);
+                            inputs.forEach(input => {
+                                const parentLabel = input.parentElement;
+                                parentLabel.classList.remove('correct', 'incorrect');
+                                if (input.value === q.correct[0]) {
+                                    parentLabel.classList.add('correct');
+                                } else if (selected && selected.value === input.value) {
+                                    parentLabel.classList.add('incorrect');
+                                }
+                            });
+                        } else { // type === 'multiple'
+                            const selectedInputs = document.querySelectorAll(`input[name="question-${index}"]:checked`);
+                            const selectedValues = Array.from(selectedInputs).map(input => input.value);
+
+                            inputs.forEach(input => {
+                                const parentLabel = input.parentElement;
+                                parentLabel.classList.remove('correct', 'incorrect');
+
+                                const isCorrect = q.correct.includes(input.value);
+                                const isSelected = selectedValues.includes(input.value);
+
+                                if (isCorrect) {
+                                    parentLabel.classList.add('correct');
+                                }
+                                if (isSelected && !isCorrect) {
+                                    parentLabel.classList.add('incorrect');
+                                }
+                            });
                         }
                     });
-                });
-
-                // Show considerations for open-ended
-                const considerations = document.querySelectorAll('.considerations');
-                considerations.forEach(con => {
-                    con.style.display = 'block';
-                });
-
-                alert('Revisión completada. Las respuestas correctas están marcadas en verde y las consideraciones para las preguntas abiertas son visibles.');
+                    alert('Revisión completada. Las respuestas correctas están marcadas en verde.');
+                } else if (enteredPassword !== null) {
+                    alert('Contraseña incorrecta. No se pueden mostrar las respuestas.');
+                }
             });
 
         });
