@@ -74,6 +74,12 @@
             border-color: #EF4444;
             color: #991B1B;
         }
+        #progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+        #notification {
+            transition: opacity 0.5s, transform 0.5s;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -90,6 +96,65 @@
             </form>
         </div>
     </div>
+    
+    <div id="review-password-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm text-center">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Revisar Respuestas</h2>
+            <p class="text-gray-600 mb-6">Ingrese la contraseña para ver las respuestas correctas.</p>
+            <form id="review-password-form">
+                <label for="review-password-input" class="sr-only">Contraseña de Revisión</label>
+                <input id="review-password-input" type="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 text-center focus:ring-2 focus:ring-teal-500 focus:border-teal-500" placeholder="Contraseña numérica" autofocus>
+                <div class="flex space-x-4">
+                    <button type="button" id="cancel-review-btn" class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition-colors font-semibold">Cancelar</button>
+                    <button type="submit" class="w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition-colors font-semibold">Confirmar</button>
+                </div>
+                <p id="review-error-message" class="text-red-500 text-sm mt-4 hidden">Contraseña incorrecta.</p>
+            </form>
+        </div>
+    </div>
+    
+    <div id="glossary-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl text-left relative">
+            <button id="close-glossary-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Glosario de Términos Clave</h2>
+            <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-4">
+                <div>
+                    <h3 class="font-bold text-lg text-teal-700">Barrido</h3>
+                    <p class="text-gray-600 ml-4">Función del sistema que le permite al personal de farmacia generar pedidos automatizados de medicación e insumos para un sector, basándose en la planificación de insumos / medicamentos de los pacientes en un rango horario determinado.</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-teal-700">Planificación</h3>
+                    <p class="text-gray-600 ml-4">Registro en el sistema de las indicaciones médicas (prescripciones) y de enfermería que detalla qué medicamento o insumo necesita un paciente, en qué dosis y en qué horario.</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-teal-700">Prescripción Médica</h3>
+                    <p class="text-gray-600 ml-4">Indicación oficial realizada por un profesional médico, que sirve como base para la planificación de la medicación de un paciente.</p>
+                </div>
+                 <div>
+                    <h3 class="font-bold text-lg text-teal-700">SOS / Según Necesidad</h3>
+                    <p class="text-gray-600 ml-4">Tipo de medicación que no tiene un horario fijo de administración, sino que se aplica cuando el paciente presenta un síntoma específico (ej. dolor, fiebre). El barrido la incluye si está activa en la planificación.</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-teal-700">Stock</h3>
+                    <p class="text-gray-600 ml-4">Inventario de medicamentos e insumos disponibles en un depósito, ya sea el de la farmacia central o el de un sector específico (como Terapia Intensiva).</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-teal-700">Trazabilidad</h3>
+                    <p class="text-gray-600 ml-4">Capacidad de rastrear el recorrido completo de un medicamento o insumo (lote, vencimiento) desde que ingresa al sanatorio hasta que es administrado a un paciente o devuelto.</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-teal-700">UCO</h3>
+                    <p class="text-gray-600 ml-4">Sigla de Unidad Coronaria. Es un sector de cuidados críticos, similar a Terapia Intensiva, que maneja su propio stock de insumos y medicamentos de alta rotación.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="fixed top-5 right-5 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg opacity-0 transform translate-y-10 z-50">
+        Revisión completada.
+    </div>
 
     <div id="main-content" class="hidden">
         <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-40">
@@ -97,12 +162,13 @@
                 <div class="text-2xl font-bold text-teal-600">
                     <span class="text-gray-700">Farmacia Interna:</span> Proceso de Barrido
                 </div>
-                <div class="hidden md:flex space-x-6 text-gray-600 font-medium">
+                <div class="hidden md:flex space-x-6 text-gray-600 font-medium items-center">
                     <a href="#proceso" class="hover:text-teal-600 transition-colors">El Proceso</a>
                     <a href="#comparativa" class="hover:text-teal-600 transition-colors">Por Sector</a>
                     <a href="#beneficios" class="hover:text-teal-600 transition-colors">Beneficios</a>
                     <a href="#faq" class="hover:text-teal-600 transition-colors">Preguntas Frecuentes</a>
                     <a href="#evaluacion" class="hover:text-teal-600 transition-colors">Evaluación</a>
+                    <button id="glossary-nav-btn" class="bg-gray-100 px-3 py-1 rounded-full hover:bg-teal-100 hover:text-teal-800 transition-colors text-sm">Glosario</button>
                 </div>
                 <button id="mobile-menu-button" class="md:hidden p-2 rounded-md hover:bg-gray-100 focus:outline-none">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
@@ -114,6 +180,7 @@
                  <a href="#beneficios" class="block text-gray-600 hover:text-teal-600 transition-colors py-2">Beneficios</a>
                  <a href="#faq" class="block text-gray-600 hover:text-teal-600 transition-colors py-2">Preguntas Frecuentes</a>
                  <a href="#evaluacion" class="block text-gray-600 hover:text-teal-600 transition-colors py-2">Evaluación</a>
+                 <a href="#" id="glossary-nav-btn-mobile" class="block text-gray-600 hover:text-teal-600 transition-colors py-2">Glosario</a>
             </div>
         </header>
 
@@ -319,15 +386,26 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
                         </div>
                     </div>
 
-                    <div id="evaluation-content" class="hidden">
+                    <div id="evaluation-content" class="hidden opacity-0 transition-opacity duration-700 ease-in-out">
+                        <div id="progress-container" class="sticky top-20 bg-white/95 backdrop-blur-sm py-4 mb-6 z-10">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-700">Progreso de la Evaluación</span>
+                                <span id="progress-text" class="text-sm font-medium text-teal-700">0 de 15 respondidas</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div id="progress-bar" class="bg-teal-600 h-2.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+
                         <h3 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Parte 1: Comprensión técnica</h3>
                         <div id="mc-questions-container-1" class="space-y-8"></div>
 
                         <h3 class="text-2xl font-bold text-gray-800 mt-12 mb-6 border-b pb-2">Parte 2: Situaciones prácticas complejas</h3>
                         <div id="mc-questions-container-2" class="space-y-8"></div>
                         
-                        <div class="text-center mt-12">
-                            <button id="check-answers-btn" class="bg-teal-600 text-white py-3 px-8 rounded-lg hover:bg-teal-700 transition-colors font-semibold text-lg">Revisar Respuestas Correctas</button>
+                        <div class="text-center mt-12 flex flex-col md:flex-row justify-center items-center gap-4">
+                            <button id="check-answers-btn" class="bg-teal-600 text-white py-3 px-8 rounded-lg hover:bg-teal-700 transition-colors font-semibold text-lg w-full md:w-auto">Revisar Respuestas Correctas</button>
+                            <button id="reset-evaluation-btn" class="bg-gray-500 text-white py-3 px-8 rounded-lg hover:bg-gray-600 transition-colors font-semibold text-lg w-full md:w-auto hidden">Reiniciar Evaluación</button>
                         </div>
                     </div>
                 </div>
@@ -337,7 +415,7 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
         
         <footer class="bg-gray-800 text-white mt-20">
             <div class="container mx-auto px-6 py-8 text-center">
-                <p>&copy; 2024 -2025 Sanatorio IPAM. Documentación de Procesos Internos.</p>
+                <p>&copy; 2024 Sanatorio IPAM. Documentación de Procesos Internos.</p>
                 <p class="text-sm text-gray-400 mt-2">Documentación realizada por Emanuel Fleier (Depto. Sistemas).</p>
             </div>
         </footer>
@@ -495,11 +573,39 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
                 });
             });
 
+            // --- GLOSSARY SCRIPT ---
+            const glossaryModal = document.getElementById('glossary-modal');
+            const glossaryNavBtn = document.getElementById('glossary-nav-btn');
+            const glossaryNavBtnMobile = document.getElementById('glossary-nav-btn-mobile');
+            const closeGlossaryBtn = document.getElementById('close-glossary-btn');
+
+            function openGlossary() {
+                glossaryModal.classList.remove('hidden');
+            }
+
+            function closeGlossary() {
+                glossaryModal.classList.add('hidden');
+            }
+
+            glossaryNavBtn.addEventListener('click', openGlossary);
+            glossaryNavBtnMobile.addEventListener('click', (e) => {
+                e.preventDefault();
+                openGlossary();
+            });
+            closeGlossaryBtn.addEventListener('click', closeGlossary);
+            glossaryModal.addEventListener('click', (e) => {
+                if (e.target === glossaryModal) {
+                    closeGlossary();
+                }
+            });
+
             // --- EVALUATION SCRIPT ---
             const nameInput = document.getElementById('evaluado-nombre');
             const startEvaluationBtn = document.getElementById('start-evaluation-btn');
             const nameError = document.getElementById('name-error');
             const evaluationContent = document.getElementById('evaluation-content');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
 
             startEvaluationBtn.addEventListener('click', () => {
                 if (nameInput.value.trim() === '') {
@@ -507,6 +613,9 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
                 } else {
                     nameError.classList.add('hidden');
                     evaluationContent.classList.remove('hidden');
+                    setTimeout(() => {
+                        evaluationContent.classList.remove('opacity-0');
+                    }, 10);
                     nameInput.disabled = true;
                     startEvaluationBtn.parentElement.style.display = 'none';
                 }
@@ -623,10 +732,49 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
                 }
             });
 
+            const allInputs = document.querySelectorAll('#evaluation-content input[type="radio"], #evaluation-content input[type="checkbox"]');
+            allInputs.forEach(input => {
+                input.addEventListener('change', updateProgressBar);
+            });
+
+            function updateProgressBar() {
+                const totalQuestions = evaluationData.multipleChoice.length;
+                let answeredQuestions = 0;
+                for (let i = 0; i < totalQuestions; i++) {
+                    const inputs = document.querySelectorAll(`input[name="question-${i}"]:checked`);
+                    if (inputs.length > 0) {
+                        answeredQuestions++;
+                    }
+                }
+                const percentage = (answeredQuestions / totalQuestions) * 100;
+                progressBar.style.width = `${percentage}%`;
+                progressText.textContent = `${answeredQuestions} de ${totalQuestions} respondidas`;
+            }
+
             const checkAnswersBtn = document.getElementById('check-answers-btn');
+            const reviewPasswordModal = document.getElementById('review-password-modal');
+            const reviewPasswordForm = document.getElementById('review-password-form');
+            const reviewPasswordInput = document.getElementById('review-password-input');
+            const reviewErrorMessage = document.getElementById('review-error-message');
+            const cancelReviewBtn = document.getElementById('cancel-review-btn');
+            const notification = document.getElementById('notification');
+            const resetEvaluationBtn = document.getElementById('reset-evaluation-btn');
+
             checkAnswersBtn.addEventListener('click', () => {
+                reviewPasswordModal.classList.remove('hidden');
+                reviewPasswordInput.focus();
+            });
+
+            cancelReviewBtn.addEventListener('click', () => {
+                reviewPasswordModal.classList.add('hidden');
+                reviewErrorMessage.classList.add('hidden');
+                reviewPasswordInput.value = '';
+            });
+
+            reviewPasswordForm.addEventListener('submit', (e) => {
+                e.preventDefault();
                 const reviewPassword = '31252025';
-                const enteredPassword = prompt('Ingrese la contraseña numérica para revisar las respuestas:');
+                const enteredPassword = reviewPasswordInput.value;
 
                 if (enteredPassword === reviewPassword) {
                     evaluationData.multipleChoice.forEach((q, index) => {
@@ -663,10 +811,32 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
                             });
                         }
                     });
-                    alert('Revisión completada. Las respuestas correctas están marcadas en verde.');
-                } else if (enteredPassword !== null) {
-                    alert('Contraseña incorrecta. No se pueden mostrar las respuestas.');
+                    reviewPasswordModal.classList.add('hidden');
+                    reviewPasswordInput.value = '';
+                    reviewErrorMessage.classList.add('hidden');
+                    
+                    notification.classList.remove('opacity-0', 'translate-y-10');
+                    setTimeout(() => {
+                        notification.classList.add('opacity-0', 'translate-y-10');
+                    }, 3000);
+                    
+                    resetEvaluationBtn.classList.remove('hidden');
+
+                } else {
+                    reviewErrorMessage.classList.remove('hidden');
+                    reviewPasswordInput.value = '';
+                    reviewPasswordInput.focus();
                 }
+            });
+            
+            resetEvaluationBtn.addEventListener('click', () => {
+                allInputs.forEach(input => {
+                    input.checked = false;
+                    input.parentElement.classList.remove('correct', 'incorrect');
+                });
+                updateProgressBar();
+                resetEvaluationBtn.classList.add('hidden');
+                document.getElementById('evaluacion').scrollIntoView({ behavior: 'smooth' });
             });
 
         });
