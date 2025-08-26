@@ -80,11 +80,28 @@
         #notification {
             transition: opacity 0.5s, transform 0.5s;
         }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #print-section, #print-section * {
+                visibility: visible;
+            }
+            #print-section {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .no-print {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body class="antialiased">
 
-    <div id="password-overlay" class="fixed inset-0 bg-gray-100 z-50 flex items-center justify-center p-4">
+    <div id="password-overlay" class="fixed inset-0 bg-gray-100 z-50 flex items-center justify-center p-4 no-print">
         <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm text-center">
             <h2 class="text-2xl font-bold text-gray-800 mb-2">Acceso Restringido</h2>
             <p class="text-gray-600 mb-6">Esta documentación es para uso interno.</p>
@@ -97,7 +114,7 @@
         </div>
     </div>
     
-    <div id="review-password-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+    <div id="review-password-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden no-print">
         <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm text-center">
             <h2 class="text-2xl font-bold text-gray-800 mb-2">Revisar Respuestas</h2>
             <p class="text-gray-600 mb-6">Ingrese la contraseña para ver las respuestas correctas.</p>
@@ -113,7 +130,7 @@
         </div>
     </div>
     
-    <div id="glossary-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+    <div id="glossary-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden no-print">
         <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl text-left relative">
             <button id="close-glossary-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -152,12 +169,12 @@
         </div>
     </div>
 
-    <div id="notification" class="fixed top-5 right-5 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg opacity-0 transform translate-y-10 z-50">
+    <div id="notification" class="fixed top-5 right-5 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg opacity-0 transform translate-y-10 z-50 no-print">
         Revisión completada.
     </div>
 
     <div id="main-content" class="hidden">
-        <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-40">
+        <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-40 no-print">
             <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
                 <div class="text-2xl font-bold text-teal-600">
                     <span class="text-gray-700">Farmacia Interna:</span> Proceso de Barrido
@@ -184,16 +201,16 @@
             </div>
         </header>
 
-        <main class="container mx-auto px-6 py-12 md:py-20">
+        <main id="main-container" class="container mx-auto px-6 py-12 md:py-20">
 
-            <section id="introduccion" class="text-center mb-20">
+            <section id="introduccion" class="text-center mb-20 no-print">
                 <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Entendiendo el Proceso de Barrido</h1>
                 <p class="max-w-3xl mx-auto text-lg text-gray-600">
                     Una guía interactiva para comprender cómo la farmacia interna garantiza el abastecimiento de medicamentos e insumos de manera eficiente y segura a todos los sectores del sanatorio.
                 </p>
             </section>
 
-            <section id="proceso" class="mb-20">
+            <section id="proceso" class="mb-20 no-print">
                 <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">El Flujo del Proceso, Paso a Paso</h2>
                 <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
                     El barrido es una función automatizada que transforma las necesidades de los pacientes en pedidos concretos para la farmacia. Haga clic en cada paso para ver los detalles y entender cómo funciona el ciclo completo.
@@ -253,7 +270,7 @@
                 </div>
             </section>
 
-            <section id="comparativa" class="mb-20">
+            <section id="comparativa" class="mb-20 no-print">
                 <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">Diferencias Clave por Tipo de Sector</h2>
                 <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
                     El barrido no funciona igual para todos. La principal diferencia radica en si el sector maneja su propio stock de insumos.
@@ -277,7 +294,7 @@
                 </div>
             </section>
 
-            <section id="beneficios" class="mb-20">
+            <section id="beneficios" class="mb-20 no-print">
                 <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Ventajas Principales del Barrido</h2>
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
@@ -313,7 +330,7 @@
                 </div>
             </section>
 
-            <section id="faq" class="mb-20">
+            <section id="faq" class="mb-20 no-print">
                 <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Preguntas Frecuentes</h2>
                 <div class="max-w-3xl mx-auto space-y-4">
                     <div class="faq-item bg-white rounded-lg shadow-sm overflow-hidden">
@@ -372,12 +389,12 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
                 </div>
             </section>
 
-            <section id="evaluacion" class="bg-white p-8 rounded-lg shadow-md">
+            <section id="evaluacion" class="bg-white p-8 rounded-lg shadow-md no-print">
                 <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">Evaluación de Conocimientos</h2>
                 <p class="text-center text-gray-600 mb-10">Verifique su comprensión del proceso de barrido y gestión de stock.</p>
 
                 <div class="max-w-4xl mx-auto">
-                    <div class="mb-8">
+                    <div id="evaluation-setup" class="mb-8">
                         <label for="evaluado-nombre" class="block text-lg font-medium text-gray-700 mb-2">Nombre del Evaluado:</label>
                         <input type="text" id="evaluado-nombre" name="evaluado-nombre" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500" placeholder="Ingrese su nombre y apellido">
                         <div class="text-center mt-4">
@@ -403,9 +420,18 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
                         <h3 class="text-2xl font-bold text-gray-800 mt-12 mb-6 border-b pb-2">Parte 2: Situaciones prácticas complejas</h3>
                         <div id="mc-questions-container-2" class="space-y-8"></div>
                         
-                        <div class="text-center mt-12 flex flex-col md:flex-row justify-center items-center gap-4">
+                        <div id="results-container" class="hidden mt-12 border-t pt-8">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Resultado de la Evaluación</h3>
+                            <div id="results-summary" class="bg-gray-50 p-6 rounded-lg text-center">
+                            </div>
+                            <div class="text-center mt-6">
+                                <button id="print-btn" class="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg w-full md:w-auto">Imprimir/Guardar Reporte</button>
+                            </div>
+                        </div>
+
+                        <div id="evaluation-buttons" class="text-center mt-12 flex flex-col md:flex-row justify-center items-center gap-4">
                             <button id="check-answers-btn" class="bg-teal-600 text-white py-3 px-8 rounded-lg hover:bg-teal-700 transition-colors font-semibold text-lg w-full md:w-auto">Revisar Respuestas Correctas</button>
-                            <button id="reset-evaluation-btn" class="bg-gray-500 text-white py-3 px-8 rounded-lg hover:bg-gray-600 transition-colors font-semibold text-lg w-full md:w-auto hidden">Reiniciar Evaluación</button>
+                            <button id="reset-evaluation-btn" class="bg-gray-500 text-white py-3 px-8 rounded-lg hover:bg-gray-600 transition-colors font-semibold text-lg w-full md:w-auto">Reiniciar Evaluación</button>
                         </div>
                     </div>
                 </div>
@@ -413,7 +439,9 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
 
         </main>
         
-        <footer class="bg-gray-800 text-white mt-20">
+        <div id="print-section"></div>
+
+        <footer class="bg-gray-800 text-white mt-20 no-print">
             <div class="container mx-auto px-6 py-8 text-center">
                 <p>&copy; 2024 Sanatorio IPAM. Documentación de Procesos Internos.</p>
                 <p class="text-sm text-gray-400 mt-2">Documentación realizada por Emanuel Fleier (Depto. Sistemas).</p>
@@ -626,77 +654,92 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
                     {
                         question: "¿Cuál es el objetivo del barrido realizado por farmacia en sectores sin stock propio, como internación general?",
                         options: { A: "Confirmar que todos los medicamentos hayan sido administrados correctamente", B: "Identificar los medicamentos que podrían reutilizarse en otros sectores", C: "Anticiparse a las necesidades de cada paciente generando pedidos por planificación futura", D: "Realizar auditorías retrospectivas sobre tratamientos administrados" },
-                        correct: ["C"], type: 'single'
+                        correct: ["C"], type: 'single',
+                        justification: "El barrido es una herramienta proactiva. Su función es generar pedidos basados en lo que los pacientes necesitarán en el futuro cercano, asegurando que la medicación esté disponible antes de la hora de administración."
                     },
                     {
                         question: "Al realizar un barrido en un rango horario que ya fue previamente procesado, el sistema:",
                         options: { A: "Reemplaza los pedidos anteriores por versiones más recientes", B: "Genera alertas de duplicación y detiene el proceso", C: "No vuelve a generar pedidos para lo que ya fue procesado", D: "Elimina automáticamente los pedidos previos y vuelve a generarlos" },
-                        correct: ["C"], type: 'single'
+                        correct: ["C"], type: 'single',
+                        justification: "El sistema es inteligente y reconoce los insumos/medicamentos para los cuales ya se generó un pedido. Solo generará nuevos pedidos si detecta cambios en la planificación que no fueron cubiertos."
                     },
                     {
                         question: "¿Cuándo se considera que se van a generar nuevos pedidos para pacientes luego de un barrido previo?",
                         options: { A: "Siempre que haya un cambio en la planificación o en la medicación indicada", B: "Cuando el médico repite la indicación sin modificar horario o dosis", C: "Solo si se han entregado todos los insumos anteriores", D: "Si el sistema detecta devoluciones desde el sector" },
-                        correct: ["A"], type: 'single'
+                        correct: ["A"], type: 'single',
+                        justification: "Un nuevo barrido generará pedidos adicionales solo si hay modificaciones (nuevos medicamentos, cambios de dosis, etc.) que no estaban contempladas en el barrido anterior."
                     },
                     {
                         question: "En sectores como Terapia Intensiva o UCO, ¿Cual es el motivo principal de la generacion de pedidos (barridos)?",
                         options: { A: "Porque estos sectores utilizan prescripción médicas individualizada", B: "Porque los medicamentos se administran a demanda sin planificación", C: "Porque mantienen stock en depósito, y el barrido sirve para reponer lo consumido.", D: "Porque ambos sectores comparten stock" },
-                        correct: ["C"], type: 'single'
+                        correct: ["C"], type: 'single',
+                        justification: "Estos sectores críticos manejan su propio inventario de insumos de alta rotación. El barrido consolida las necesidades futuras de todos sus pacientes para generar un pedido de reposición de stock general."
                     },
                     {
                         question: "¿Qué tipo de medicación/insumos es incluida por el sistema en un barrido? (selección múltiple)",
                         options: { A: "Medicación pautada con horario fijo", B: "Medicación \"SOS\" activa en la planificacion", C: "Insumos registrados como \"entregados previamente\"", D: "Medicación suspendida luego del barrido" },
-                        correct: ["A", "B"], type: 'multiple'
+                        correct: ["A", "B"], type: 'multiple',
+                        justification: "El barrido incluye toda la medicación e insumos que estén planificados y activos para el período seleccionado, tanto los de horario fijo como los indicados 'SOS'."
                     },
                     {
                         question: "¿Cuál de las siguientes acciones debe realizar farmacia antes de reincorporar un medicamento al stock general?",
                         options: { A: "Confirmar que no haya sido administrado y esté en condiciones adecuadas", B: "Validar en sistema que no esté planificado nuevamente", C: "Solicitar autorización médica antes de su reintegro", D: "Reetiquetar el producto para indicar que es reutilizable" },
-                        correct: ["A"], type: 'single'
+                        correct: ["A"], type: 'single',
+                        justification: "La seguridad del paciente es primordial. Antes de reingresar un medicamento al stock, se debe verificar su integridad (empaque intacto), fecha de vencimiento y que no haya salido de la cadena de custodia segura."
                     },
                     {
                         question: "¿En qué situación el personal de farmacia no debería realizar un nuevo barrido?",
                         options: { A: "Al recibir una nueva indicación médica urgente", B: "Si el barrido ya se hizo para ese período y no hubo cambios", C: "Cuando se modifica la planificación de horarios de medicación", D: "Si se agregan medicamentos nuevos a un paciente internado" },
-                        correct: ["C"], type: 'single'
+                        correct: ["C"], type: 'single',
+                        justification: "Realizar un nuevo barrido es necesario cuando hay cambios en la medicación. Si solo cambia el horario de planificación, el insumo ya está contemplado en el pedido anterior y no se necesita uno nuevo."
                     },
                     {
                         question: "¿Por qué no es recomendable realizar un barrido con una fecha y hora en el pasado?",
                         options: { A: "Porque el sistema puede sobreescribir los registros clínicos", B: "Porque se generarían pedidos de insumos ya administrados o vencidos", C: "Porque se pierde trazabilidad de las entregas", D: "Ninguna de las anteriores" },
-                        correct: ["D"], type: 'single'
+                        correct: ["D"], type: 'single',
+                        justification: "La respuesta correcta es 'Ninguna de las anteriores' porque la razón principal (opción B) es la correcta. Realizar un barrido en el pasado generaría pedidos de medicación que teóricamente ya fue administrada, creando confusión."
                     },
                     {
                         question: "Al preparar un pedido generado por barrido, farmacia detecta que un insumo está próximo a vencer. ¿Qué debe hacer?",
                         options: { A: "Utilizarlo primero si está dentro del rango de seguridad", B: "Cambiar el medicamento por otro del mismo grupo farmacológico", C: "Consultar con el médico tratante antes de incluirlo en el pedido", D: "Eliminarlo del pedido directamente" },
-                        correct: ["A"], type: 'single'
+                        correct: ["A"], type: 'single',
+                        justification: "La política de gestión de stock (FEFO - First Expired, First Out) indica que se debe dar salida primero a los productos con vencimiento más cercano para evitar pérdidas, siempre que su uso sea seguro."
                     },
                     {
                         question: "En caso de que el médico suspenda una medicación después de un barrido, ¿cómo se reflejará en el sistema?",
                         options: { A: "El pedido original se cancela automáticamente", B: "La medicación suspendida deja de formar parte de la planificación futura y no se genera en nuevos pedidos", C: "El sistema genera una alerta en la interfaz de farmacia", D: "Se debe realizar una devolución manual del medicamento entregado" },
-                        correct: ["B"], type: 'single'
+                        correct: ["B"], type: 'single',
+                        justification: "El barrido es una 'foto' del momento. La suspensión se reflejará en la planificación, por lo que futuros barridos ya no incluirán ese medicamento. El pedido ya generado no se cancela automáticamente."
                     },
                     {
                         question: "Durante el registro de la devolución, un envase de medicación está abierto y sin registro de administración. ¿Qué procedimiento debe seguir farmacia?",
                         options: { A: "Incorporarlo nuevamente al stock general si el contenido es suficiente", B: "Descartarlo como registro de devolucion y registrarlo con tal motivo en el sistema", C: "Realizar registro de la devolucion", D: "Notificar al sector de enfermería que el envase fue mal devuelto" },
-                        correct: ["C"], type: 'single'
+                        correct: ["C"], type: 'single',
+                        justification: "Independientemente del estado del envase, toda devolución debe ser registrada en el sistema para mantener la trazabilidad y realizar el crédito correspondiente al paciente. Luego se decidirá si se descarta o no."
                     },
                     {
                         question: "Se reciben devoluciones al mismo tiempo que se genera un barrido. ¿Qué práctica garantiza una correcta gestión del stock?",
                         options: { A: "Registrar las devoluciones después del barrido", B: "Realizar el barrido nuevamente después de actualizar las devoluciones", C: "Ignorar las devoluciones si no están en condiciones", D: "Procesar devoluciones y barrido en orden indistinto" },
-                        correct: ["B"], type: 'single'
+                        correct: ["B"], type: 'single',
+                        justification: "Para evitar generar pedidos de insumos que acaban de reingresar al stock, el procedimiento correcto es: 1° Registrar las devoluciones para actualizar el inventario. 2° Realizar el barrido."
                     },
                     {
                         question: "¿Qué pasos deben seguirse si al preparar un pedido falta un insumo y no hay stock disponible? (respuestas múltiples)",
                         options: { A: "Completar el resto del pedido y enviar", B: "Registrar la falta en sistema", C: "Informar al sector que el medicamento está en falta", D: "Generar una devolución parcial del pedido" },
-                        correct: ["A", "B", "C"], type: 'multiple'
+                        correct: ["A", "B", "C"], type: 'multiple',
+                        justification: "Es crucial no retrasar el resto de los tratamientos. Se debe enviar lo que está disponible, registrar la falta para gestión de stock y comunicar proactivamente al sector de enfermería."
                     },
                     {
                         question: "En un turno nocturno, se encuentra un medicamento sin rotular ni registro asociado. ¿Cuál es la acción correcta del personal de farmacia?",
                         options: { A: "Consultar con enfermería y, si no hay objeciones, reutilizarlo", B: "Registrar el hallazgo como incidente y separarlo para descarte", C: "Etiquetarlo como \"en cuarentena\" hasta su identificación", D: "Incorporarlo directamente como stock no asignado" },
-                        correct: ["B"], type: 'single'
+                        correct: ["B"], type: 'single',
+                        justification: "Un medicamento no identificado es un riesgo para la seguridad del paciente. No puede ser utilizado bajo ninguna circunstancia y debe ser tratado como un incidente y segregado para su descarte seguro."
                     },
                     {
                         question: "¿Qué función cumple el registro de devolución en el sistema? (respuestas múltiples)",
                         options: { A: "Permite mejorar el proceso de facturacion de medicamento-insumos", B: "Permite trazabilidad del stock no utilizado", C: "Sustituye la necesidad de revisar fechas de vencimiento", D: "Controla que farmacia no reciba más de lo entregado" },
-                        correct: ["A", "B"], type: 'multiple'
+                        correct: ["A", "B"], type: 'multiple',
+                        justification: "Registrar una devolución es vital para que se realice el crédito correcto en la cuenta del paciente (facturación) y para mantener un registro trazable de por qué un insumo no fue utilizado y reingresó al stock."
                     }
                 ]
             };
@@ -759,6 +802,9 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
             const cancelReviewBtn = document.getElementById('cancel-review-btn');
             const notification = document.getElementById('notification');
             const resetEvaluationBtn = document.getElementById('reset-evaluation-btn');
+            const resultsContainer = document.getElementById('results-container');
+            const printBtn = document.getElementById('print-btn');
+            const evaluationButtons = document.getElementById('evaluation-buttons');
 
             checkAnswersBtn.addEventListener('click', () => {
                 reviewPasswordModal.classList.remove('hidden');
@@ -769,6 +815,78 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
                 reviewPasswordModal.classList.add('hidden');
                 reviewErrorMessage.classList.add('hidden');
                 reviewPasswordInput.value = '';
+            });
+            
+            function calculateAndShowResults() {
+                let score = 0;
+                const totalQuestions = evaluationData.multipleChoice.length;
+                let reportDetailsHtml = '<div class="space-y-6">';
+
+                evaluationData.multipleChoice.forEach((q, index) => {
+                    const inputs = document.querySelectorAll(`input[name="question-${index}"]:checked`);
+                    let isCorrect = false;
+
+                    if (q.type === 'single') {
+                        if (inputs.length > 0 && inputs[0].value === q.correct[0]) {
+                            score++;
+                            isCorrect = true;
+                        }
+                    } else { // multiple
+                        const selectedValues = Array.from(inputs).map(input => input.value);
+                        const correctAnswers = q.correct;
+                        if (selectedValues.length === correctAnswers.length && selectedValues.every(val => correctAnswers.includes(val))) {
+                            score++;
+                            isCorrect = true;
+                        }
+                    }
+
+                    reportDetailsHtml += `
+                        <div class="border-b pb-4">
+                            <p class="font-semibold">${index + 1}. ${q.question}</p>
+                            <p class="mt-2"><strong>Resultado:</strong> <span class="${isCorrect ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}">${isCorrect ? 'Correcta' : 'Incorrecta'}</span></p>
+                            ${!isCorrect ? `<div class="mt-2 text-sm bg-orange-50 p-3 rounded-md border-l-4 border-orange-400"><p class="font-bold">Justificación:</p><p>${q.justification}</p></div>` : ''}
+                        </div>
+                    `;
+                });
+                
+                reportDetailsHtml += '</div>';
+
+                const percentage = ((score / totalQuestions) * 100).toFixed(1);
+                const userName = document.getElementById('evaluado-nombre').value;
+                const currentDate = new Date().toLocaleString('es-AR');
+
+                const resultsSummaryContainer = document.getElementById('results-summary');
+                resultsSummaryContainer.innerHTML = `
+                    <p class="text-lg"><span class="font-semibold">Evaluado:</span> ${userName}</p>
+                    <p class="text-lg"><span class="font-semibold">Fecha:</span> ${currentDate}</p>
+                    <p class="text-3xl font-bold mt-4 text-teal-700">${score} de ${totalQuestions} correctas</p>
+                    <p class="text-2xl font-semibold text-gray-700">(${percentage}%)</p>
+                `;
+
+                const printSection = document.getElementById('print-section');
+                printSection.innerHTML = `
+                    <div class="p-8">
+                        <h1 class="text-3xl font-bold text-center mb-2">Reporte de Evaluación</h1>
+                        <p class="text-center text-lg text-gray-600 mb-8">Proceso de Barrido - Farmacia IPAM</p>
+                        <div class="border-t border-b py-4 my-4">
+                            <p><strong>Evaluado:</strong> ${userName}</p>
+                            <p><strong>Fecha de Finalización:</strong> ${currentDate}</p>
+                        </div>
+                        <div class="text-center bg-gray-100 p-6 rounded-lg mb-8">
+                            <p class="text-xl font-semibold">Resultado Final</p>
+                            <p class="text-5xl font-bold mt-2 text-teal-700">${score} / ${totalQuestions}</p>
+                            <p class="text-3xl font-semibold text-gray-800">(${percentage}%)</p>
+                        </div>
+                        <h2 class="text-2xl font-bold text-center my-6">Detalle de Respuestas</h2>
+                        ${reportDetailsHtml}
+                    </div>
+                `;
+
+                resultsContainer.classList.remove('hidden');
+            }
+            
+            printBtn.addEventListener('click', () => {
+                window.print();
             });
 
             reviewPasswordForm.addEventListener('submit', (e) => {
@@ -815,12 +933,14 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
                     reviewPasswordInput.value = '';
                     reviewErrorMessage.classList.add('hidden');
                     
+                    calculateAndShowResults();
+                    
                     notification.classList.remove('opacity-0', 'translate-y-10');
                     setTimeout(() => {
                         notification.classList.add('opacity-0', 'translate-y-10');
                     }, 3000);
                     
-                    resetEvaluationBtn.classList.remove('hidden');
+                    evaluationButtons.classList.add('hidden');
 
                 } else {
                     reviewErrorMessage.classList.remove('hidden');
@@ -835,11 +955,13 @@ Para que esos cambios se vean reflejados, debe realizarse un nuevo barrido, que 
                     input.parentElement.classList.remove('correct', 'incorrect');
                 });
                 updateProgressBar();
-                resetEvaluationBtn.classList.add('hidden');
-                document.getElementById('evaluacion').scrollIntoView({ behavior: 'smooth' });
+                resultsContainer.classList.add('hidden');
+                evaluationButtons.classList.remove('hidden');
+                document.getElementById('evaluation-setup').scrollIntoView({ behavior: 'smooth' });
             });
 
         });
     </script>
 </body>
 </html>
+
